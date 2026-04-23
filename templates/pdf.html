@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>PDF Explainer</h2>
+
+<input type="file" id="pdfFile">
+
+<button onclick="uploadPDF()" class="btn btn-success mt-2">
+Upload PDF
+</button>
+
+<hr>
+
+<input id="question" class="form-control" placeholder="Ask question from PDF">
+
+<button onclick="askPDF()" class="btn btn-primary mt-2">
+Ask
+</button>
+
+<div id="answer" class="mt-3"></div>
+
+<script>
+
+function uploadPDF(){
+
+let file=document.getElementById("pdfFile").files[0]
+
+let formData=new FormData()
+
+formData.append("file",file)
+
+fetch("/upload-pdf",{
+
+method:"POST",
+
+body:formData
+
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+alert(data.message)
+
+})
+
+}
+
+function askPDF(){
+
+let q=document.getElementById("question").value
+
+fetch("/ask-pdf",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+question:q
+})
+
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("answer").innerText=data.answer
+
+})
+
+}
+
+</script>
+
+{% endblock %}

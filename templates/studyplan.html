@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Study Plan Generator</h2>
+
+<input id="topic" class="form-control" placeholder="Enter topic">
+
+<input id="days" class="form-control mt-2" placeholder="Number of days">
+
+<button onclick="generatePlan()" class="btn btn-primary mt-2">
+Generate Plan
+</button>
+
+<div id="plan" class="mt-3"></div>
+
+<script>
+
+function generatePlan(){
+
+let topic=document.getElementById("topic").value
+let days=document.getElementById("days").value
+
+fetch("/generate-study-plan",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+topic:topic,
+days:days
+})
+
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+let container=document.getElementById("plan")
+
+container.innerHTML=""
+
+data.study_plan.forEach(p=>{
+
+container.innerHTML += `
+<div class="card p-3 mb-2">
+<b>${p.day}</b><br>
+${p.task}
+</div>
+`
+
+})
+
+})
+
+}
+</script>
+
+{% endblock %}

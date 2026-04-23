@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>AI Chat</h2>
+
+<div id="chatbox" style="height:400px;overflow:auto;border:1px solid #ccc;padding:10px"></div>
+
+<input id="question" class="form-control mt-3" placeholder="Ask anything">
+
+<button onclick="askAI()" class="btn btn-primary mt-2">Send</button>
+
+<script>
+
+function askAI(){
+
+let q=document.getElementById("question").value
+
+fetch("/ai-chat",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+question:q
+})
+
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+let chat=document.getElementById("chatbox")
+
+chat.innerHTML += "<p><b>You:</b> "+q+"</p>"
+chat.innerHTML += "<p><b>AI:</b> "+data.answer+"</p>"
+
+})
+
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Student Progress</h2>
+
+<div class="card p-3">
+
+<p>Total Quizzes Attempted:
+<b id="totalQuiz">0</b></p>
+
+<p>Average Score:
+<b id="avgScore">0%</b></p>
+
+</div>
+
+<script>
+
+function loadProgress(){
+
+fetch("/get-progress")
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("totalQuiz").innerText =
+data.total_quiz
+
+document.getElementById("avgScore").innerText =
+data.avg_score + "%"
+
+})
+
+}
+
+loadProgress()
+
+</script>
+
+{% endblock %}

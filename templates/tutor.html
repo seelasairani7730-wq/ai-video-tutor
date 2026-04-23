@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>AI Tutor</h2>
+
+<input type="text"
+id="topic"
+class="form-control"
+placeholder="Enter topic">
+
+<select id="level" class="form-control mt-2">
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+</select>
+
+<button class="btn btn-primary mt-3"
+onclick="generateTutor()">
+Generate Lesson
+</button>
+
+<div id="lessonBox" class="mt-4"></div>
+
+{% endblock %}

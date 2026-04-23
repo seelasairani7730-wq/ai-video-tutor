@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>AI Notes Generator</h2>
+
+<input id="topic" class="form-control" placeholder="Enter topic">
+
+<select id="level" class="form-control mt-2">
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+</select>
+
+<button onclick="generateNotes()" class="btn btn-primary mt-2">
+Generate Notes
+</button>
+
+<hr>
+
+<div id="notesBox" style="white-space: pre-wrap; font-size:18px;"></div>
+
+{% endblock %}

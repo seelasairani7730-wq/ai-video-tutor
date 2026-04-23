@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>AI Quiz Generator</h2>
+
+<input id="topic" class="form-control" placeholder="Enter topic">
+
+<select id="level" class="form-control mt-2">
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+</select>
+
+<button onclick="generateQuiz()" class="btn btn-primary mt-2">
+Generate Quiz
+</button>
+
+<hr>
+
+<div id="quiz-container"></div>
+
+<br>
+
+<button onclick="submitQuiz()" class="btn btn-success">
+Submit Quiz
+</button>
+
+<hr>
+
+<h4 id="result"></h4>
+
+<div class="progress">
+<div id="progressBar" class="progress-bar" style="width:0%"></div>
+</div>
+
+<script>
+
+let quizData = []
+
+// ==============================
+// GENERATE QUIZ
+// ==============================
+
+async function generateQuiz(){
+
+let topic = document.getElementById("topic").value
+let level = document.getElementById("level").value
+
+let res = await fetch("/generate-quiz",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+topic:topic,
+level:level
+})
+})
+
+let data = await res.json()
+
+
+console.log(data)
+
+if(!data.quiz){
+alert("Quiz generation failed")
+return
+}
+
+
+quizData = data.quiz
+
+let container = document.getElementById("quiz-container")
+
+container.innerHTML=""
+
+quizData.forEach((q,index)=>{
+
+let html = `<div class="card p-3 mb-3">
+
+<h5>${index+1}. ${q.question}</h5>
+`
+
+q.options.forEach(option=>{
+
+html += `
+<label>
+<input type="radio" name="q${index}" value="${option}">
+${option}
+</label><br>
+`
+
+})
+
+html += `<div id="correct${index}"></div>`
+
+html += `</div>`
+
+container.innerHTML += html
+
+})
+
+}
+
+
+// ==============================
+// SUBMIT QUIZ
+// ==============================
+
+async function submitQuiz(){
+
+if(quizData.length === 0){
+alert("Generate quiz first!")
+return
+}
+
+let score = 0
+
+quizData.forEach((q,index)=>{
+
+let selected = document.querySelector(`input[name="q${index}"]:checked`)
+
+let correctAnswer = q.answer
+
+if(selected){
+
+if(selected.value.toLowerCase().includes(correctAnswer.toLowerCase())){
+
+score++
+
+selected.parentElement.style.color="green"
+
+}else{
+
+selected.parentElement.style.color="red"
+
+}
+
+}
+
+// show correct answer
+document.getElementById("correct"+index).innerHTML =
+`<p style="color:blue"><b>Correct Answer:</b> ${correctAnswer}</p>`
+
+})
+
+
+// disable quiz
+document.querySelectorAll("input[type=radio]").forEach(r=>{
+r.disabled=true
+})
+
+
+// send score to backend
+let res = await fetch("/submit-quiz-score",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+score:score,
+total:quizData.length
+})
+
+})
+
+let data = await res.json()
+
+
+// show result
+document.getElementById("result").innerText =
+"Score: "+data.score+" / "+data.total+" ("+data.percentage.toFixed(2)+"%)"
+
+
+// progress bar
+document.getElementById("progressBar").style.width =
+data.percentage + "%"
+
+}
+
+</script>
+
+{% endblock %}
